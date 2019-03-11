@@ -1,17 +1,17 @@
 /*
-GAME RULES:
+YOUR 3 CHALLENGES
+Change the game to follow these rules:
+1. A player looses his ENTIRE score when he rolls two 6 in a row. After that, it's the next player's turn. (Hint: Always save the previous dice roll in a separate variable)
 
-- The game has 2 players, playing in rounds
-- In each turn, a player rolls a dice as many times as he whishes. Each result get added to his ROUND score
-- BUT, if the player rolls a 1, all his ROUND score gets lost. After that, it's the next player's turn
-- The player can choose to 'Hold', which means that his ROUND score gets added to his GLBAL score. After that, it's the next player's turn
-- The first player to reach 100 points on GLOBAL score wins the game
+2. Add an input field to the HTML where players can set the winning score, so that they can change the predefined score of 100. (Hint: you can read that value with the .value property in JavaScript. This is a good oportunity to use google to figure this out :)
 
 */
 
 //initial values
 var scores, roundScore, activePlayer, dice, gamePlaying;
 init();
+
+var lastDice;
 
 document.querySelector(".btn-roll").addEventListener("click", function() {
   if (gamePlaying) {
@@ -24,7 +24,13 @@ document.querySelector(".btn-roll").addEventListener("click", function() {
     diceDOM.src = "dice-" + dice + ".png";
 
     //3. update the round score IF the rolled number was not a 1
-    if (dice !== 1) {
+    if (dice === 6 && lastDice === 6) {
+      //player loses score
+      scores[activePlayer] = 0;
+      //update DOM
+      document.querySelector("#score-" + activePlayer).textContent = "0";
+      nextPlayer();
+    } else if (dice !== 1) {
       //add score
       roundScore += dice;
       document.querySelector(
@@ -34,6 +40,8 @@ document.querySelector(".btn-roll").addEventListener("click", function() {
       //next player
       nextPlayer();
     }
+
+    lastDice = dice;
   }
 });
 
@@ -46,8 +54,19 @@ document.querySelector(".btn-hold").addEventListener("click", function() {
     document.querySelector("#score-" + activePlayer).textContent =
       scores[activePlayer];
 
+    var input = document.querySelector(".final-score").value;
+    var winningScore;
+
+    //undefined, 0, null or "" are coerced to false
+    //anthing is coerced to true
+    if (input) {
+      winningScore = input;
+    } else {
+      winningScore = 100;
+    }
+
     //check if player won the game
-    if (scores[activePlayer] >= 100) {
+    if (scores[activePlayer] >= winningScore) {
       document.querySelector("#name-" + activePlayer).textContent = "Winner!";
       document.querySelector(".dice").style.displa = "none";
       document
